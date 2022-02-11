@@ -23,7 +23,8 @@ public class GaussianBlur : PostEffectsBase {
 	
 	[Range(1, 8)]
 	public int downSample = 2;
-	
+	private static readonly int BlurSize = Shader.PropertyToID("_BlurSize");
+
 	/// 1st edition: just apply blur
 //	void OnRenderImage(RenderTexture src, RenderTexture dest) {
 //		if (material != null) {
@@ -73,22 +74,10 @@ public class GaussianBlur : PostEffectsBase {
 			Graphics.Blit(src, buffer0);
 
 			for (int i = 0; i < iterations; i++) {
-				material.SetFloat("_BlurSize", 1.0f + i * blurSpread);
+				material.SetFloat(BlurSize, 1.0f + i * blurSpread);
 
-				RenderTexture buffer1 = RenderTexture.GetTemporary(rtW, rtH, 0);
-
-				// Render the vertical pass
-				Graphics.Blit(buffer0, buffer1, material, 0);
-
-				RenderTexture.ReleaseTemporary(buffer0);
-				buffer0 = buffer1;
-				buffer1 = RenderTexture.GetTemporary(rtW, rtH, 0);
-
-				// Render the horizontal pass
-				Graphics.Blit(buffer0, buffer1, material, 1);
-
-				RenderTexture.ReleaseTemporary(buffer0);
-				buffer0 = buffer1;
+				var buffer1 = Render(rtW, rtH, buffer0,0);
+				buffer0 = Render(rtW, rtH, buffer1, 1);
 			}
 
 			Graphics.Blit(buffer0, dest);
@@ -96,5 +85,13 @@ public class GaussianBlur : PostEffectsBase {
 		} else {
 			Graphics.Blit(src, dest);
 		}
+	}
+	private RenderTexture Render(int rtW, int rtH, RenderTexture srcTexture,int pass)
+	{
+		RenderTexture resultTexture = RenderTexture.GetTemporary(rtW, rtH, 0);
+		// Render the vertical pass
+		Graphics.Blit(srcTexture, resultTexture, material, pass);
+		RenderTexture.ReleaseTemporary(srcTexture);
+		return resultTexture;
 	}
 }
