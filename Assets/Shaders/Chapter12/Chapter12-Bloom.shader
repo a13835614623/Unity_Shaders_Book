@@ -4,7 +4,7 @@ Shader "Unity Shaders Book/Chapter 12/Bloom" {
 	Properties {
 		_MainTex ("Base (RGB)", 2D) = "white" {}
 		_Bloom ("Bloom (RGB)", 2D) = "black" {}
-		_LuminanceThreshold ("Luminance Threshold", Float) = 0.5
+		_LuminanceThreshold ("Luminance Threshold", Float) = 1
 		_BlurSize ("Blur Size", Float) = 1.0
 	}
 	SubShader {
@@ -40,7 +40,6 @@ Shader "Unity Shaders Book/Chapter 12/Bloom" {
 		fixed4 fragExtractBright(v2f i) : SV_Target {
 			fixed4 c = tex2D(_MainTex, i.uv);
 			fixed val = clamp(luminance(c) - _LuminanceThreshold, 0.0, 1.0);
-			
 			return c * val;
 		}
 		
@@ -65,7 +64,7 @@ Shader "Unity Shaders Book/Chapter 12/Bloom" {
 		}
 		
 		fixed4 fragBloom(v2fBloom i) : SV_Target {
-			return tex2D(_MainTex, i.uv.xy) + tex2D(_Bloom, i.uv.zw);
+			return tex2D(_MainTex,i.uv.zw)+ tex2D(_Bloom, i.uv.zw);
 		} 
 		
 		ENDCG

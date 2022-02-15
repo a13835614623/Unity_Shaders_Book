@@ -29,7 +29,8 @@ Shader "Unity Shaders Book/Chapter 12/Motion Blur" {
 		}
 		
 		fixed4 fragRGB (v2f i) : SV_Target {
-			return fixed4(tex2D(_MainTex, i.uv).rgb, _BlurAmount);
+			// return fixed4(tex2D(_MainTex, i.uv).rgb, _BlurAmount);
+			return fixed4(tex2D(_MainTex, i.uv).rgb,_BlurAmount);
 		}
 		
 		half4 fragA (v2f i) : SV_Target {
